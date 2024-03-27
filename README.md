@@ -59,72 +59,7 @@
 
 <tr><td>
 
-### 📊 WakaTime
 
-<picture>
-  <source
-    srcset="https://github-readme-stats.vercel.app/api/wakatime?username=sun0225SUN&layout=compact&text_color=f0f6fc&bg_color=00000000&hide_border=true&hide_title=true"
-    media="(prefers-color-scheme: dark)"
-  />
-  <source
-    srcset="https://github-readme-stats.vercel.app/api/wakatime?username=sun0225SUN&layout=compact&text_color=1f2328&bg_color=00000000&hide_border=true&hide_title=true"
-    media="(prefers-color-scheme: light)"
-  />
-  <img src="https://github-readme-stats.vercel.app/api/wakatime?username=sun0225SUN&layout=compact&text_color=f0f6fc&bg_color=00000000&hide_border=true&hide_title=true" />
-</picture>
-
-</td></tr>
-
-<tr><td>
-
-<!--START_SECTION:waka-->
-**I'm an Early 🐤** 
-
-```text
-🌞 Morning                501 commits         ███████░░░░░░░░░░░░░░░░░░   28.31 % 
-🌆 Daytime                544 commits         ████████░░░░░░░░░░░░░░░░░   30.73 % 
-🌃 Evening                432 commits         ██████░░░░░░░░░░░░░░░░░░░   24.41 % 
-🌙 Night                  293 commits         ████░░░░░░░░░░░░░░░░░░░░░   16.55 % 
-```
-📅 **I'm Most Productive on Friday** 
-
-```text
-Monday                   163 commits         ██░░░░░░░░░░░░░░░░░░░░░░░   09.21 % 
-Tuesday                  142 commits         ██░░░░░░░░░░░░░░░░░░░░░░░   08.02 % 
-Wednesday                257 commits         ████░░░░░░░░░░░░░░░░░░░░░   14.52 % 
-Thursday                 233 commits         ███░░░░░░░░░░░░░░░░░░░░░░   13.16 % 
-Friday                   563 commits         ████████░░░░░░░░░░░░░░░░░   31.81 % 
-Saturday                 149 commits         ██░░░░░░░░░░░░░░░░░░░░░░░   08.42 % 
-Sunday                   263 commits         ████░░░░░░░░░░░░░░░░░░░░░   14.86 % 
-```
-
-
-📊 **This Week I Spent My Time On** 
-
-```text
-🕑︎ Time Zone: Asia/Shanghai
-
-💬 Programming Languages: 
-Vue.js                   6 hrs 23 mins       ████████░░░░░░░░░░░░░░░░░   33.67 % 
-Python                   3 hrs 29 mins       █████░░░░░░░░░░░░░░░░░░░░   18.41 % 
-TypeScript               3 hrs 25 mins       ████░░░░░░░░░░░░░░░░░░░░░   17.99 % 
-Docker                   1 hr 41 mins        ██░░░░░░░░░░░░░░░░░░░░░░░   08.89 % 
-JSON                     59 mins             █░░░░░░░░░░░░░░░░░░░░░░░░   05.22 % 
-
-🔥 Editors: 
-VS Code                  18 hrs 59 mins      █████████████████████████   100.00 % 
-
-💻 Operating System: 
-Mac                      18 hrs 59 mins      █████████████████████████   100.00 % 
-```
-
-
- Last Updated on 27/03/2024 01:15:06 UTC
-<!--END_SECTION:waka-->
-
-</td></tr>
-
-</table>
 
 
 <!-- ########################################## 分割 ########################################## -->
