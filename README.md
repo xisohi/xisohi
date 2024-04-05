@@ -20,7 +20,7 @@
   <!-- profile logo 个人资料徽标 -->
   <div>
     <a href="https://blog.xisohi.com/"><img src="https://img.shields.io/badge/Website-博客-blue" /></a>&emsp;
-    <a href="https://twitter.com/xisohi/"><img src="https://img.shields.io/badge/Twitter-推特-blue" /></a>&emsp;
+    <a href="https://twitter.com/xisohi1/"><img src="https://img.shields.io/badge/Twitter-推特-blue" /></a>&emsp;
     <a href="https://www.youtube.com/@sohixi9201"><img src="https://img.shields.io/badge/YouTube-油管-c32136" /></a>&emsp;
     <a href="https://filehelper.weixin.qq.com"><img src="https://img.shields.io/badge/WeChat-微信-07c160" /></a>&emsp;
     <a href="https://space.bilibili.com/392822006/"><img src="https://img.shields.io/badge/Bilibili-B站-ff69b4" /></a>&emsp;
