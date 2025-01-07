@@ -39,7 +39,6 @@
 
 </div>
 
-
 <!-- ########################################## 分割 ########################################## -->
 
 <div align="center">
@@ -63,15 +62,6 @@
 
 <!-- GitHub 数据统计 -->
 <img height="137px" src="https://github-readme-stats-git-masterrstaa-rickstaa.vercel.app/api?username=xisohi&hide_title=true&hide_border=true&show_icons=true&include_all_commits=true&line_height=21text_color=000&icon_color=000&bg_color=0,ea6161,ffc64d,fffc4d,52fa5a&theme=graywhite" />
-
-
-<!-- Wakatime Graph-->
-<table>
-  <tr>
-    <td><img src="https://wakatime.com/share/@9d71e63e-8e98-4a75-b8a7-b0e52dacf278/a365198f-0bbd-44e4-b0ca-b84dd48f0681.svg" width="500" alt="Wakatime"/></td>
-    <td><img src="https://wakatime.com/share/@9d71e63e-8e98-4a75-b8a7-b0e52dacf278/0d6c2060-4171-4b52-b8af-0791cf07bcb2.svg" width="500" alt="Wakatime"/></td>
-  </tr>
-</table>
 
 </div>
 
