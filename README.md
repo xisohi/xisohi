@@ -25,9 +25,6 @@
   <img alt="github-snake" src="https://cdn.jsdelivr.net/gh/xisohi/xisohi/profile-snake-contrib/github-contribution-grid-snake-dark.svg" />
 </picture>
 
-</div>
-</div>
-
 
 #  🙋 Hello
 
@@ -37,13 +34,7 @@
 
 <img src="https://cdn.jsdelivr.net/gh/xisohi/xisohi/assets/images/man_run.png" width="250" height="250" />
 
-<div>
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://readme-jokes.vercel.app/api?hideBorder&bgColor=%23121212" />
-    <source media="(prefers-color-scheme: light)" srcset="https://readme-jokes.vercel.app/api?hideBorder&bgColor=%ffffff" />
-    <img alt="Jokes Card" src="https://readme-jokes.vercel.app/api?hideBorder&bgColor=%23121212" />
-  </picture>
-</div>
+
 
 <img align="left" width="150" src="https://cdn.jsdelivr.net/gh/xisohi/xisohi/assets/images/left.png" />
 <picture>
