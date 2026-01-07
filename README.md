@@ -25,9 +25,6 @@
   <img alt="github-snake" src="https://cdn.jsdelivr.net/gh/xisohi/xisohi/profile-snake-contrib/github-contribution-grid-snake-dark.svg" />
 </picture>
 
-
-#  🙋 Hello
-
 <img width="200%" src="https://cdn.jsdelivr.net/gh/xisohi/xisohi/assets/images/hr.gif" />
 
 <div align="center">
