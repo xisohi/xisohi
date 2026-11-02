@@ -5,7 +5,7 @@
 - 🔭 正在维护：**[CHINA-IPTV](https://github.com/xisohi/CHINA-IPTV)** —— 大陆可用的电视直播源合集与 EPG
 - ☕ Java 后端：Spring Boot 企业系统（养老 OA / WMS）
 - 🍎 黑苹果：OpenCore / UHD 630 双屏 / EDID 修复
-- 🚗 车机语音助手：[CarVoiceAssistant](https://github.com/xisohi/CarVoiceAssistant)
+- 🚗 车机语音助手：**[CarVoiceAssistant](https://github.com/xisohi/CarVoiceAssistant)** 好用的车机语音助手
 - ✍️ 博客：**[blog.xisohi.com](https://blog.xisohi.com)**
 
 ## 📊 GitHub 数据（每日自动更新）
