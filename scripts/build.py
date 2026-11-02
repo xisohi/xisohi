@@ -14,6 +14,7 @@ import argparse
 import datetime
 import json
 import os
+import random
 import sys
 import urllib.error
 import urllib.request
@@ -294,17 +295,37 @@ def render_activity(events):
     return svg_head(w, h) + "".join(body) + svg_tail()
 
 
-def _snake_path(cols, rows, pad_x, pad_y, pitch):
-    """S 形折返路径，覆盖每个格子中心。"""
+def _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd):
+    """贪心随机游走：每步优先走向未访问的相邻格，无未访问邻居时随机走。
+    返回 (SVG path, 每格首次被经过的步序 dict)。"""
     pts = []
-    for row in range(rows):
-        rng = range(cols) if row % 2 == 0 else range(cols - 1, -1, -1)
-        for col in rng:
-            pts.append((pad_x + col * pitch, pad_y + row * pitch))
+    first = {}
+    x, y = rnd.randint(0, cols - 1), rnd.randint(0, rows - 1)
+    pts.append((pad_x + x * pitch, pad_y + y * pitch))
+    first[(x, y)] = 0
+    dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    for i in range(1, steps):
+        fresh = []
+        for dx, dy in dirs:
+            nx, ny = x + dx, y + dy
+            if 0 <= nx < cols and 0 <= ny < rows and (nx, ny) not in first:
+                fresh.append((dx, dy))
+        if fresh:
+            dx, dy = rnd.choice(fresh)
+        else:
+            rnd.shuffle(dirs)
+            for dx, dy in dirs:
+                nx, ny = x + dx, y + dy
+                if 0 <= nx < cols and 0 <= ny < rows:
+                    break
+        x, y = x + dx, y + dy
+        pts.append((pad_x + x * pitch, pad_y + y * pitch))
+        if (x, y) not in first:
+            first[(x, y)] = i
     d = "M %d %d" % pts[0]
     for p in pts[1:]:
         d += " L %d %d" % p
-    return d
+    return d, first
 
 
 def render_snake(cal):
@@ -316,37 +337,49 @@ def render_snake(cal):
     h = pad_y + rows * pitch + 26
     body = []
     body.append('<text x="20" y="26" font-size="14" fill="%s" '
-                'font-family="Segoe UI,Arial">贡献贪吃蛇（吃掉的绿点 = 有贡献的日子）</text>' % FG)
-    total_pts = cols * rows
+                'font-family="Segoe UI,Arial">贡献贪吃蛇（蛇随机游走，吃到绿点即消失）</text>' % FG)
+    steps, dur = 1600, 16.0
+    rnd = random.Random(datetime.date.today().toordinal())  # 每天一条新路线，当天内稳定
+    path, first = _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd)
     for i, d in enumerate(days):
         col, row = i // rows, i % rows
         x = pad_x + col * pitch
         y = pad_y + row * pitch
         lv = _level_of(int(d.get("contributionCount", 0)))
-        eat = ""
-        if lv > 0:
-            # 行优先之字路径上的序号 → 蛇头到达时刻（占 12s 循环的比例）
-            idx = row * cols + (col if row % 2 == 0 else cols - 1 - col)
-            t = min(idx / total_pts + 0.03, 0.97)
-            eat = ('<animate attributeName="opacity" values="1;1;0" '
-                   'keyTimes="0;%.3f;1" dur="12s" begin="0s" '
-                   'repeatCount="indefinite"/>' % t)
-        body.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3" '
-                    'fill="%s">%s</rect>' % (x, y, cell, cell, GREEN[lv], eat))
-        if lv >= 3:
-            body.append('<circle cx="%d" cy="%d" r="3.5" fill="%s">%s</circle>'
-                        % (x + cell / 2, y + cell / 2, ORANGE, eat))
-    path = _snake_path(cols, rows, pad_x + cell / 2, pad_y + cell / 2, pitch)
+        if lv > 0 and (col, row) in first:
+            t = first[(col, row)] / steps * dur
+            dot = ""
+            if lv >= 3:
+                dot = ('<circle cx="7" cy="7" r="3.5" fill="%s">'
+                       '<animate attributeName="opacity" values="1;1;0" '
+                       'keyTimes="0;0.65;1" dur="0.7s" begin="%.2fs" '
+                       'fill="freeze"/></circle>' % (ORANGE, t))
+            body.append(
+                '<g transform="translate(%d %d)">'
+                '<rect x="0" y="0" width="%d" height="%d" rx="3" fill="%s">'
+                '<animateTransform attributeName="transform" type="scale" '
+                'values="1;1;0" keyTimes="0;0.65;1" dur="0.7s" begin="%.2fs" fill="freeze"/>'
+                '<animate attributeName="opacity" values="1;1;0" '
+                'keyTimes="0;0.65;1" dur="0.7s" begin="%.2fs" fill="freeze"/>'
+                '</rect>%s</g>'
+                % (x, y, cell, cell, GREEN[lv], t, t, dot))
+        else:
+            dot = ""
+            if lv >= 3:
+                dot = ('<circle cx="%d" cy="%d" r="3.5" fill="%s"/>'
+                       % (x + cell / 2, y + cell / 2, ORANGE))
+            body.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3" '
+                        'fill="%s"/>%s' % (x, y, cell, cell, GREEN[lv], dot))
     snake_color = ["#39d353", "#2ea44f", "#238636", "#1f7a37", "#1a6e30", "#16622a"]
     for i in range(6):
         r = 7 - i
-        begin = "%.2fs" % (i * 0.14)
+        begin = "%.2fs" % (i * 0.07)
         body.append('<circle r="%d" fill="%s" opacity="%s">'
-                    '<animateMotion dur="12s" begin="%s" repeatCount="indefinite" '
-                    'path="%s"/></circle>' % (r, snake_color[i], max(0.85 - i * 0.1, 0.25), begin, path))
+                    '<animateMotion dur="%ss" begin="%s" repeatCount="indefinite" '
+                    'path="%s"/></circle>' % (r, snake_color[i], max(0.85 - i * 0.1, 0.25), dur, begin, path))
     body.append('<circle r="8" fill="#f6f8fa" stroke="#39d353" stroke-width="2">'
-                '<animateMotion dur="12s" begin="0s" repeatCount="indefinite" '
-                'path="%s"/></circle>' % path)
+                '<animateMotion dur="%ss" begin="0s" repeatCount="indefinite" '
+                'path="%s"/></circle>' % (dur, path))
     return svg_head(w, h) + "".join(body) + svg_tail()
 
 
