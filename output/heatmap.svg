@@ -1,1 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="520" height="60"><rect width="520" height="60" fill="#0d1117"/><text x="20" y="38" fill="#8b949e" font-size="14">配置 PROFILE_TOKEN 后由 Actions 自动生成（错误: 'data'）</text></svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="520" height="86"><rect width="520" height="86" fill="#0d1117"/><text x="20" y="30" fill="#8b949e" font-size="14">配置PROFILE_TOKEN后由Actions自动生成</text><text x="20" y="56" fill="#58a6ff" font-size="12">TOKEN来源=无TOKEN 类型=其他 长度=0</text></svg>

@@ -15,6 +15,7 @@ import datetime
 import json
 import os
 import sys
+import urllib.error
 import urllib.request
 
 USER = "xisohi"
@@ -61,6 +62,7 @@ def fetch_user_repos():
 
 def fetch_contributions():
     """GraphQL 贡献日历；无 token 时返回 None（本地降级）。"""
+    global CONTRIB_ERR
     if not TOKEN:
         return None
     now = datetime.datetime.now(datetime.timezone.utc)
@@ -78,8 +80,12 @@ def fetch_contributions():
                      "variables": {"from": frm.isoformat(),
                                    "to": now.isoformat()}})
         return data["data"]["user"]["contributionsCollection"]["contributionCalendar"]
+    except urllib.error.HTTPError as e:
+        body = e.read().decode("utf-8", "replace")[:160]
+        CONTRIB_ERR = "HTTP %d: %s" % (e.code, body)
+        print("[warn] GraphQL 贡献数据获取失败: HTTP %d %s" % (e.code, body))
+        return None
     except Exception as exc:  # noqa: BLE001
-        global CONTRIB_ERR
         CONTRIB_ERR = str(exc)
         print("[warn] GraphQL 贡献数据获取失败: %s" % exc)
         return None
@@ -381,14 +387,26 @@ def main():
         files["heatmap.svg"] = render_heatmap(cal)
         files["snake.svg"] = render_snake(cal)
     else:
+        src = ("PROFILE_TOKEN" if os.environ.get("PROFILE_TOKEN")
+               else ("GITHUB_TOKEN" if os.environ.get("GITHUB_TOKEN") else "无TOKEN"))
+        if TOKEN.startswith("ghp_"):
+            kind = "classic PAT"
+        elif TOKEN.startswith("gho_"):
+            kind = "OAuth"
+        elif TOKEN.startswith("github_pat_"):
+            kind = "fine-grained PAT"
+        else:
+            kind = "其他"
+        diag = "TOKEN来源=%s 类型=%s 长度=%d" % (src, kind, len(TOKEN))
+        hint = "配置PROFILE_TOKEN后由Actions自动生成"
+        if CONTRIB_ERR:
+            hint = hint + "（错误: " + CONTRIB_ERR[:60] + "）"
         for name in ("heatmap.svg", "snake.svg"):
-            hint = "配置 PROFILE_TOKEN 后由 Actions 自动生成"
-            if CONTRIB_ERR:
-                hint = hint + "（错误: " + CONTRIB_ERR[:70] + "）"
             files[name] = ('<svg xmlns="http://www.w3.org/2000/svg" width="520" '
-                           'height="60"><rect width="520" height="60" fill="%s"/>'
-                           '<text x="20" y="38" fill="%s" font-size="14">%s</text></svg>'
-                           % (BG, MUT, esc(hint)))
+                           'height="86"><rect width="520" height="86" fill="%s"/>'
+                           '<text x="20" y="30" fill="%s" font-size="14">%s</text>'
+                           '<text x="20" y="56" fill="%s" font-size="12">%s</text></svg>'
+                           % (BG, MUT, esc(hint), ACCENT, esc(diag)))
 
     for name, content in files.items():
         with open(os.path.join(out, name), "w", encoding="utf-8") as f:
