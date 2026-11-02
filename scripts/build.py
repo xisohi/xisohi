@@ -317,16 +317,25 @@ def render_snake(cal):
     body = []
     body.append('<text x="20" y="26" font-size="14" fill="%s" '
                 'font-family="Segoe UI,Arial">贡献贪吃蛇（吃掉的绿点 = 有贡献的日子）</text>' % FG)
+    total_pts = cols * rows
     for i, d in enumerate(days):
         col, row = i // rows, i % rows
         x = pad_x + col * pitch
         y = pad_y + row * pitch
         lv = _level_of(int(d.get("contributionCount", 0)))
+        eat = ""
+        if lv > 0:
+            # 行优先之字路径上的序号 → 蛇头到达时刻（占 12s 循环的比例）
+            idx = row * cols + (col if row % 2 == 0 else cols - 1 - col)
+            t = min(idx / total_pts + 0.03, 0.97)
+            eat = ('<animate attributeName="opacity" values="1;1;0" '
+                   'keyTimes="0;%.3f;1" dur="12s" begin="0s" '
+                   'repeatCount="indefinite"/>' % t)
         body.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3" '
-                    'fill="%s"/>' % (x, y, cell, cell, GREEN[lv]))
+                    'fill="%s">%s</rect>' % (x, y, cell, cell, GREEN[lv], eat))
         if lv >= 3:
-            body.append('<circle cx="%d" cy="%d" r="3.5" fill="%s"/>'
-                        % (x + cell / 2, y + cell / 2, ORANGE))
+            body.append('<circle cx="%d" cy="%d" r="3.5" fill="%s">%s</circle>'
+                        % (x + cell / 2, y + cell / 2, ORANGE, eat))
     path = _snake_path(cols, rows, pad_x + cell / 2, pad_y + cell / 2, pitch)
     snake_color = ["#39d353", "#2ea44f", "#238636", "#1f7a37", "#1a6e30", "#16622a"]
     for i in range(6):
