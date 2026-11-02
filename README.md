@@ -6,8 +6,8 @@
 - 📱 Android：XHYSTV（直播聚合）、MusicFree 插件生态
 - ☕ Java 后端：Spring Boot 企业系统（养老 OA / WMS）
 - 🍎 黑苹果：OpenCore / UHD 630 双屏 / EDID 修复
+- 车机语音助手：
 - ✍️ 博客：**[blog.xisohi.com](https://blog.xisohi.com)**
-- 📫 联系：xuhui0607@gmail.com
 
 ## 📊 GitHub 数据（每日自动更新）
 
@@ -17,9 +17,5 @@
 
 ![Languages](./output/langs.svg)
 
-![Recent activity](./output/activity.svg)
-
 ![Snake](./output/snake.svg)
 
-> 本主页全部动态图表由仓库内 `scripts/build.py` 自研生成（GitHub Actions 定时重绘），
-> 不依赖任何第三方模板或服务。

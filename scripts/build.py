@@ -155,6 +155,19 @@ def _grid_days(cal):
     return days
 
 
+def _level_of(count):
+    """按贡献次数映射到 0-4 档（GitHub 官方色阶：1-3/4-6/7-9/10+）。"""
+    if count <= 0:
+        return 0
+    if count < 4:
+        return 1
+    if count < 7:
+        return 2
+    if count < 10:
+        return 3
+    return 4
+
+
 def render_heatmap(cal):
     days = _grid_days(cal)
     cols, rows = 53, 7
@@ -175,7 +188,7 @@ def render_heatmap(cal):
         row = i % rows
         x = pad_x + col * pitch
         y = pad_y + row * pitch
-        level = min(int(d.get("level", 0)), 4)
+        level = _level_of(int(d.get("contributionCount", 0)))
         body.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3" '
                     'fill="%s"/>' % (x, y, cell, cell, GREEN[level]))
     lx = w - 150
@@ -308,7 +321,7 @@ def render_snake(cal):
         col, row = i // rows, i % rows
         x = pad_x + col * pitch
         y = pad_y + row * pitch
-        lv = min(int(d.get("level", 0)), 4)
+        lv = _level_of(int(d.get("contributionCount", 0)))
         body.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3" '
                     'fill="%s"/>' % (x, y, cell, cell, GREEN[lv]))
         if lv >= 3:
