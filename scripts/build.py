@@ -295,41 +295,51 @@ def render_activity(events):
     return svg_head(w, h) + "".join(body) + svg_tail()
 
 
-def _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd):
-    """蛇形随机游走：70% 概率保持当前方向直行（爬行感），否则优先转向未访问格。
-    返回 (SVG path, 每格首次被经过的步序 dict)。"""
+def _cover_path(cols, rows, pad_x, pad_y, pitch, rnd):
+    """贪心覆盖路径：蜿蜒走向未访问格，遇死区直线飞到最近的未访问格，直至覆盖全部格子。
+    返回 (SVG path, 每格首次被经过的步序 dict, 总步数)。"""
     pts = []
     first = {}
+    total = cols * rows
     x, y = rnd.randint(0, cols - 1), rnd.randint(0, rows - 1)
     pts.append((pad_x + x * pitch, pad_y + y * pitch))
     first[(x, y)] = 0
+    step = 0
     dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
-    cur = None
-    for i in range(1, steps):
-        move = None
-        if cur is not None and rnd.random() < 0.7:
-            nx, ny = x + cur[0], y + cur[1]
-            if 0 <= nx < cols and 0 <= ny < rows:
-                move = cur
-        if move is None:
-            fresh = [(dx, dy) for dx, dy in dirs
-                     if 0 <= x + dx < cols and 0 <= y + dy < rows
-                     and (x + dx, y + dy) not in first]
-            if fresh:
-                move = rnd.choice(fresh)
-            else:
-                cand = [(dx, dy) for dx, dy in dirs
-                        if 0 <= x + dx < cols and 0 <= y + dy < rows]
-                move = rnd.choice(cand)
-        cur = move
-        x, y = x + move[0], y + move[1]
+    while len(first) < total:
+        fresh = [(dx, dy) for dx, dy in dirs
+                 if 0 <= x + dx < cols and 0 <= y + dy < rows
+                 and (x + dx, y + dy) not in first]
+        if fresh:
+            dx, dy = rnd.choice(fresh)
+        else:
+            target = min(((gx, gy) for gx in range(cols) for gy in range(rows)
+                          if (gx, gy) not in first),
+                         key=lambda g: abs(g[0] - x) + abs(g[1] - y))
+            sx = 1 if target[0] > x else -1
+            while x != target[0]:
+                x += sx
+                step += 1
+                pts.append((pad_x + x * pitch, pad_y + y * pitch))
+                if (x, y) not in first:
+                    first[(x, y)] = step
+            sy = 1 if target[1] > y else -1
+            while y != target[1]:
+                y += sy
+                step += 1
+                pts.append((pad_x + x * pitch, pad_y + y * pitch))
+                if (x, y) not in first:
+                    first[(x, y)] = step
+            continue
+        x, y = x + dx, y + dy
+        step += 1
         pts.append((pad_x + x * pitch, pad_y + y * pitch))
         if (x, y) not in first:
-            first[(x, y)] = i
+            first[(x, y)] = step
     d = "M %d %d" % pts[0]
     for p in pts[1:]:
         d += " L %d %d" % p
-    return d, first
+    return d, first, step + 1
 
 
 def render_snake(cal):
@@ -341,39 +351,37 @@ def render_snake(cal):
     h = pad_y + rows * pitch + 26
     body = []
     body.append('<text x="20" y="26" font-size="14" fill="%s" '
-                'font-family="Segoe UI,Arial">贡献贪吃蛇（蛇随机游走，吃到绿点即消失）</text>' % FG)
-    steps, dur = 2000, 36.0
+                'font-family="Segoe UI,Arial">贡献贪吃蛇（蜿蜒游走，一轮吃光后循环）</text>' % FG)
     rnd = random.Random(datetime.date.today().toordinal())  # 每天一条新路线，当天内稳定
-    path, first = _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd)
+    path, first, n_steps = _cover_path(cols, rows, pad_x, pad_y, pitch, rnd)
+    dur = max(24.0, n_steps * 0.045)  # 每格约 45ms，一轮约 25-35 秒
     for i, d in enumerate(days):
         col, row = i // rows, i % rows
         x = pad_x + col * pitch
         y = pad_y + row * pitch
         lv = _level_of(int(d.get("contributionCount", 0)))
-        if lv > 0 and (col, row) in first:
-            t = first[(col, row)] / steps * dur
+        if lv > 0:
+            t = first[(col, row)] / n_steps
+            t2 = min(t + 0.06, 0.97)
             dot = ""
             if lv >= 3:
                 dot = ('<circle cx="7" cy="7" r="3.5" fill="%s">'
-                       '<animate attributeName="opacity" values="1;1;0" '
-                       'keyTimes="0;0.65;1" dur="0.7s" begin="%.2fs" '
-                       'fill="freeze"/></circle>' % (ORANGE, t))
+                       '<animate attributeName="opacity" values="1;1;0;0" '
+                       'keyTimes="0;%.3f;%.3f;1" dur="%ss" repeatCount="indefinite"/>'
+                       '</circle>' % (ORANGE, t, t2, dur))
             body.append(
                 '<g transform="translate(%d %d)">'
-                '<rect x="0" y="0" width="%d" height="%d" rx="3" fill="%s">'
+                '<rect x="0" y="0" width="%d" height="%d" rx="3" fill="%s" '
+                'style="transform-origin:7px 7px">'
                 '<animateTransform attributeName="transform" type="scale" '
-                'values="1;1;0" keyTimes="0;0.65;1" dur="0.7s" begin="%.2fs" fill="freeze"/>'
-                '<animate attributeName="opacity" values="1;1;0" '
-                'keyTimes="0;0.65;1" dur="0.7s" begin="%.2fs" fill="freeze"/>'
+                'values="1;1;0;0" keyTimes="0;%.3f;%.3f;1" dur="%ss" repeatCount="indefinite"/>'
+                '<animate attributeName="opacity" values="1;1;0;0" '
+                'keyTimes="0;%.3f;%.3f;1" dur="%ss" repeatCount="indefinite"/>'
                 '</rect>%s</g>'
-                % (x, y, cell, cell, GREEN[lv], t, t, dot))
+                % (x, y, cell, cell, GREEN[lv], t, t2, dur, t, t2, dur, dot))
         else:
-            dot = ""
-            if lv >= 3:
-                dot = ('<circle cx="%d" cy="%d" r="3.5" fill="%s"/>'
-                       % (x + cell / 2, y + cell / 2, ORANGE))
             body.append('<rect x="%d" y="%d" width="%d" height="%d" rx="3" '
-                        'fill="%s"/>%s' % (x, y, cell, cell, GREEN[lv], dot))
+                        'fill="%s"/>' % (x, y, cell, cell, GREEN[lv]))
     snake_color = ["#39d353", "#2ea44f", "#238636", "#1f7a37", "#1a6e30", "#16622a"]
     for i in range(6):
         r = 7 - i
