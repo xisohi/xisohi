@@ -19,7 +19,8 @@ import urllib.request
 
 USER = "xisohi"
 API = "https://api.github.com"
-TOKEN = os.environ.get("GITHUB_TOKEN", "")
+TOKEN = os.environ.get("PROFILE_TOKEN") or os.environ.get("GITHUB_TOKEN", "")
+CONTRIB_ERR = ""
 
 # ---------- 基础工具 ----------
 
@@ -78,6 +79,8 @@ def fetch_contributions():
                                    "to": now.isoformat()}})
         return data["data"]["user"]["contributionsCollection"]["contributionCalendar"]
     except Exception as exc:  # noqa: BLE001
+        global CONTRIB_ERR
+        CONTRIB_ERR = str(exc)
         print("[warn] GraphQL 贡献数据获取失败: %s" % exc)
         return None
 
@@ -379,11 +382,13 @@ def main():
         files["snake.svg"] = render_snake(cal)
     else:
         for name in ("heatmap.svg", "snake.svg"):
+            hint = "配置 PROFILE_TOKEN 后由 Actions 自动生成"
+            if CONTRIB_ERR:
+                hint = hint + "（错误: " + CONTRIB_ERR[:70] + "）"
             files[name] = ('<svg xmlns="http://www.w3.org/2000/svg" width="520" '
                            'height="60"><rect width="520" height="60" fill="%s"/>'
-                           '<text x="20" y="38" fill="%s" font-size="14">'
-                           '配置 GITHUB_TOKEN 后由 Actions 自动生成</text></svg>'
-                           % (BG, MUT))
+                           '<text x="20" y="38" fill="%s" font-size="14">%s</text></svg>'
+                           % (BG, MUT, esc(hint)))
 
     for name, content in files.items():
         with open(os.path.join(out, name), "w", encoding="utf-8") as f:
