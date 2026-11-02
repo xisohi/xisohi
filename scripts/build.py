@@ -354,7 +354,7 @@ def render_snake(cal):
                 'font-family="Segoe UI,Arial">贡献贪吃蛇（蜿蜒游走，一轮吃光后循环）</text>' % FG)
     rnd = random.Random(datetime.date.today().toordinal())  # 每天一条新路线，当天内稳定
     path, first, n_steps = _cover_path(cols, rows, pad_x, pad_y, pitch, rnd)
-    dur = max(24.0, n_steps * 0.045)  # 每格约 45ms，一轮约 25-35 秒
+    dur = 180.0  # 一轮 3 分钟
     for i, d in enumerate(days):
         col, row = i // rows, i % rows
         x = pad_x + col * pitch
@@ -362,7 +362,7 @@ def render_snake(cal):
         lv = _level_of(int(d.get("contributionCount", 0)))
         if lv > 0:
             t = first[(col, row)] / n_steps
-            t2 = min(t + 0.06, 0.97)
+            t2 = min(t + 1.5 / dur, 0.97)  # 被吃动画固定约 1.5 秒
             dot = ""
             if lv >= 3:
                 dot = ('<circle cx="7" cy="7" r="3.5" fill="%s">'
@@ -385,7 +385,7 @@ def render_snake(cal):
     snake_color = ["#39d353", "#2ea44f", "#238636", "#1f7a37", "#1a6e30", "#16622a"]
     for i in range(6):
         r = 7 - i
-        begin = "%.2fs" % (i * 0.07)
+        begin = "%.2fs" % (i * 4.0 * dur / n_steps)  # 蛇身每节滞后约 4 格
         body.append('<circle r="%d" fill="%s" opacity="%s">'
                     '<animateMotion dur="%ss" begin="%s" repeatCount="indefinite" '
                     'path="%s"/></circle>' % (r, snake_color[i], max(0.85 - i * 0.1, 0.25), dur, begin, path))
