@@ -434,12 +434,10 @@ def main():
                            "created_at": (datetime.datetime.now(datetime.timezone.utc) -
                                           datetime.timedelta(hours=i * 6)).isoformat(),
                            "payload": {"commits": [{}] * (i % 4), "ref_type": "repository", "ref": "demo"}})
-        cal = mock_calendar()
     else:
         print("[live] 拉取 GitHub 数据（用户: %s）" % USER)
         user = http("/users/" + USER)
         repos = fetch_user_repos()
-        cal = fetch_contributions()
         try:
             events = http("/users/%s/events/public?per_page=10" % USER)
         except Exception as exc:  # noqa: BLE001
@@ -448,36 +446,12 @@ def main():
         print("  repos=%d stars=%d forks=%d" %
               (len(repos), sum(r["stargazers_count"] for r in repos),
                sum(r["forks_count"] for r in repos)))
-        print("  贡献日历: %s" % ("已获取" if cal else "未获取（无 GITHUB_TOKEN，跳过热力图/贪吃蛇）"))
 
     files = {
         "stats.svg": render_stats(user, repos),
         "langs.svg": render_langs(repos),
         "activity.svg": render_activity(events),
     }
-    if cal:
-        files["heatmap.svg"] = render_heatmap(cal)
-    else:
-        src = ("PROFILE_TOKEN" if os.environ.get("PROFILE_TOKEN")
-               else ("GITHUB_TOKEN" if os.environ.get("GITHUB_TOKEN") else "无TOKEN"))
-        if TOKEN.startswith("ghp_"):
-            kind = "classic PAT"
-        elif TOKEN.startswith("gho_"):
-            kind = "OAuth"
-        elif TOKEN.startswith("github_pat_"):
-            kind = "fine-grained PAT"
-        else:
-            kind = "其他"
-        diag = "TOKEN来源=%s 类型=%s 长度=%d" % (src, kind, len(TOKEN))
-        hint = "配置PROFILE_TOKEN后由Actions自动生成"
-        if CONTRIB_ERR:
-            hint = hint + "（错误: " + CONTRIB_ERR[:60] + "）"
-        for name in ("heatmap.svg",):
-            files[name] = ('<svg xmlns="http://www.w3.org/2000/svg" width="941" '
-                           'height="86"><rect width="941" height="86" fill="%s"/>'
-                           '<text x="20" y="30" fill="%s" font-size="14">%s</text>'
-                           '<text x="20" y="56" fill="%s" font-size="12">%s</text></svg>'
-                           % (BG, MUT, esc(hint), ACCENT, esc(diag)))
 
     for name, content in files.items():
         with open(os.path.join(out, name), "w", encoding="utf-8") as f:

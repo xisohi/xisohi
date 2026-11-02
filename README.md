@@ -12,8 +12,6 @@
 
 ![Stats](./output/stats.svg)
 
-![Contributions](./output/heatmap.svg)
-
 ![Languages](./output/langs.svg)
 
 ![Snake](./output/snake.gif)
