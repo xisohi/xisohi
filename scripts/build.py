@@ -226,7 +226,7 @@ def render_langs(repos):
     for i, (lang, cnt) in enumerate(items):
         y = 44 + i * 30
         pct = cnt * 100.0 / total
-        bw = int(330 * cnt / bar_max)
+        bw = int(270 * cnt / bar_max)
         body.append('<rect x="20" y="%d" width="10" height="10" rx="2" '
                     'fill="%s"/>' % (y, palette[i % len(palette)]))
         body.append('<text x="38" y="%d" font-size="12" fill="%s" '
@@ -234,9 +234,9 @@ def render_langs(repos):
                     % (y + 10, FG, esc(lang)))
         body.append('<rect x="170" y="%d" width="%d" height="10" rx="3" '
                     'fill="%s" opacity="0.85"/>' % (y, bw, palette[i % len(palette)]))
-        body.append('<text x="%d" y="%d" font-size="11" fill="%s" '
-                    'font-family="Segoe UI,Arial">%d 个 · %.0f%%</text>'
-                    % (170 + bw + 10, y + 10, MUT, cnt, pct))
+        body.append('<text x="510" y="%d" font-size="11" fill="%s" '
+                    'text-anchor="end" font-family="Segoe UI,Arial">%d 个 · %.0f%%</text>'
+                    % (y + 10, MUT, cnt, pct))
     return svg_head(w, h) + "".join(body) + svg_tail()
 
 
