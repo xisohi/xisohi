@@ -128,13 +128,13 @@ def render_stats(user, repos):
         ("Forks", forks),
         ("Followers", user.get("followers", 0)),
     ]
-    w, h = 520, 120
+    w, h = 941, 120
     body = ['<text x="20" y="26" font-size="13" fill="%s" '
             'font-family="Segoe UI,Arial">%s 的 GitHub 数据</text>'
             % (MUT, esc(USER))]
-    cw = 116
+    cw = 214
     for i, (label, val) in enumerate(cells):
-        x = 20 + i * (cw + 6)
+        x = 20 + i * (cw + 14)
         body.append('<rect x="%d" y="40" width="%d" height="62" rx="8" fill="%s"/>'
                     % (x, cw, CARD))
         body.append('<text x="%d" y="66" font-size="20" font-weight="bold" '
@@ -211,13 +211,13 @@ def render_langs(repos):
         if lang:
             lang_cnt[lang] = lang_cnt.get(lang, 0) + 1
     if not lang_cnt:
-        return '<svg xmlns="http://www.w3.org/2000/svg" width="520" ' \
-               'height="60"><rect width="520" height="60" fill="%s"/>' \
+        return '<svg xmlns="http://www.w3.org/2000/svg" width="941" ' \
+               'height="60"><rect width="941" height="60" fill="%s"/>' \
                '<text x="20" y="38" fill="%s" font-size="14">暂无语言数据</text>' \
                '</svg>' % (BG, FG)
     items = sorted(lang_cnt.items(), key=lambda kv: -kv[1])[:8]
     total = sum(lang_cnt.values())
-    w, h = 520, 30 + len(items) * 30
+    w, h = 941, 30 + len(items) * 30
     body = ['<text x="20" y="26" font-size="13" fill="%s" '
             'font-family="Segoe UI,Arial">仓库语言分布（按仓库数）</text>' % MUT]
     palette = ["#f05138", "#3776ab", "#f1e05a", "#563d7c", "#2b7489",
@@ -226,7 +226,7 @@ def render_langs(repos):
     for i, (lang, cnt) in enumerate(items):
         y = 44 + i * 30
         pct = cnt * 100.0 / total
-        bw = int(270 * cnt / bar_max)
+        bw = int(650 * cnt / bar_max)
         body.append('<rect x="20" y="%d" width="10" height="10" rx="2" '
                     'fill="%s"/>' % (y, palette[i % len(palette)]))
         body.append('<text x="38" y="%d" font-size="12" fill="%s" '
@@ -234,7 +234,7 @@ def render_langs(repos):
                     % (y + 10, FG, esc(lang)))
         body.append('<rect x="170" y="%d" width="%d" height="10" rx="3" '
                     'fill="%s" opacity="0.85"/>' % (y, bw, palette[i % len(palette)]))
-        body.append('<text x="510" y="%d" font-size="11" fill="%s" '
+        body.append('<text x="931" y="%d" font-size="11" fill="%s" '
                     'text-anchor="end" font-family="Segoe UI,Arial">%d 个 · %.0f%%</text>'
                     % (y + 10, MUT, cnt, pct))
     return svg_head(w, h) + "".join(body) + svg_tail()
@@ -277,14 +277,14 @@ def _event_text(e):
 
 
 def render_activity(events):
-    w, h = 540, 30 + len(events) * 26
+    w, h = 941, 30 + len(events) * 26
     body = ['<text x="20" y="26" font-size="13" fill="%s" '
             'font-family="Segoe UI,Arial">最近动态</text>' % MUT]
     for i, e in enumerate(events):
         y = 44 + i * 26
         txt = _event_text(e)
-        if len(txt) > 40:
-            txt = txt[:39] + "…"
+        if len(txt) > 90:
+            txt = txt[:89] + "…"
         body.append('<circle cx="24" cy="%d" r="3" fill="%s"/>' % (y - 4, ACCENT))
         body.append('<text x="36" y="%d" font-size="12" fill="%s" '
                     'font-family="Segoe UI,Arial">%s</text>' % (y, FG, esc(txt)))
@@ -473,8 +473,8 @@ def main():
         if CONTRIB_ERR:
             hint = hint + "（错误: " + CONTRIB_ERR[:60] + "）"
         for name in ("heatmap.svg",):
-            files[name] = ('<svg xmlns="http://www.w3.org/2000/svg" width="520" '
-                           'height="86"><rect width="520" height="86" fill="%s"/>'
+            files[name] = ('<svg xmlns="http://www.w3.org/2000/svg" width="941" '
+                           'height="86"><rect width="941" height="86" fill="%s"/>'
                            '<text x="20" y="30" fill="%s" font-size="14">%s</text>'
                            '<text x="20" y="56" fill="%s" font-size="12">%s</text></svg>'
                            % (BG, MUT, esc(hint), ACCENT, esc(diag)))
