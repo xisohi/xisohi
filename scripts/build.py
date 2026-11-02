@@ -296,7 +296,7 @@ def render_activity(events):
 
 
 def _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd):
-    """贪心随机游走：每步优先走向未访问的相邻格，无未访问邻居时随机走。
+    """蛇形随机游走：70% 概率保持当前方向直行（爬行感），否则优先转向未访问格。
     返回 (SVG path, 每格首次被经过的步序 dict)。"""
     pts = []
     first = {}
@@ -304,21 +304,25 @@ def _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd):
     pts.append((pad_x + x * pitch, pad_y + y * pitch))
     first[(x, y)] = 0
     dirs = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+    cur = None
     for i in range(1, steps):
-        fresh = []
-        for dx, dy in dirs:
-            nx, ny = x + dx, y + dy
-            if 0 <= nx < cols and 0 <= ny < rows and (nx, ny) not in first:
-                fresh.append((dx, dy))
-        if fresh:
-            dx, dy = rnd.choice(fresh)
-        else:
-            rnd.shuffle(dirs)
-            for dx, dy in dirs:
-                nx, ny = x + dx, y + dy
-                if 0 <= nx < cols and 0 <= ny < rows:
-                    break
-        x, y = x + dx, y + dy
+        move = None
+        if cur is not None and rnd.random() < 0.7:
+            nx, ny = x + cur[0], y + cur[1]
+            if 0 <= nx < cols and 0 <= ny < rows:
+                move = cur
+        if move is None:
+            fresh = [(dx, dy) for dx, dy in dirs
+                     if 0 <= x + dx < cols and 0 <= y + dy < rows
+                     and (x + dx, y + dy) not in first]
+            if fresh:
+                move = rnd.choice(fresh)
+            else:
+                cand = [(dx, dy) for dx, dy in dirs
+                        if 0 <= x + dx < cols and 0 <= y + dy < rows]
+                move = rnd.choice(cand)
+        cur = move
+        x, y = x + move[0], y + move[1]
         pts.append((pad_x + x * pitch, pad_y + y * pitch))
         if (x, y) not in first:
             first[(x, y)] = i
@@ -338,7 +342,7 @@ def render_snake(cal):
     body = []
     body.append('<text x="20" y="26" font-size="14" fill="%s" '
                 'font-family="Segoe UI,Arial">贡献贪吃蛇（蛇随机游走，吃到绿点即消失）</text>' % FG)
-    steps, dur = 1600, 16.0
+    steps, dur = 2000, 36.0
     rnd = random.Random(datetime.date.today().toordinal())  # 每天一条新路线，当天内稳定
     path, first = _random_walk_path(cols, rows, pad_x, pad_y, pitch, steps, rnd)
     for i, d in enumerate(days):
