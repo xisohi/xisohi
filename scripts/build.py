@@ -111,8 +111,7 @@ ACCENT = "#58a6ff"
 def svg_head(w, h, extra=""):
     return ('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" '
             'viewBox="0 0 %d %d">%s'
-            '<rect x="0" y="0" width="%d" height="%d" fill="%s" rx="10"/>'
-            % (w, h, w, h, extra, w, h, BG))
+            % (w, h, w, h, extra))
 
 
 def svg_tail():
