@@ -72,13 +72,18 @@ def fetch_contributions():
         " user(login:\"%s\"){"
         "  contributionsCollection(from:$from,to:$to){"
         "   contributionCalendar{ totalContributions"
-        "    weeks{ contributionDays{ date contributionCount level } }"
+        "    weeks{ contributionDays{ date contributionCount } }"
         " } } } }" % USER)
     try:
         data = http("https://api.github.com/graphql", "POST",
                     {"query": query,
                      "variables": {"from": frm.isoformat(),
                                    "to": now.isoformat()}})
+        if isinstance(data, dict) and data.get("errors"):
+            CONTRIB_ERR = "GraphQL错误: " + "; ".join(
+                str(e.get("message", "?")) for e in data["errors"])[:160]
+            print("[warn] GraphQL 贡献数据获取失败: %s" % CONTRIB_ERR)
+            return None
         return data["data"]["user"]["contributionsCollection"]["contributionCalendar"]
     except urllib.error.HTTPError as e:
         body = e.read().decode("utf-8", "replace")[:160]
