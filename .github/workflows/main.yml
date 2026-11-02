@@ -31,6 +31,15 @@ jobs:
         env:
           PROFILE_TOKEN: ${{ secrets.PROFILE_TOKEN || secrets.GITHUB_TOKEN }}
 
+      - name: Generate snake (Platane/snk)
+        uses: Platane/snk@v3
+        with:
+          github_user_name: xisohi
+          outputs: |
+            output/snake.gif?color_snake=#7ee787&color_dots=#161b22,#0e4429,#006d32,#26a641,#39d353&color_background=#0d1117
+        env:
+          GITHUB_TOKEN: ${{ secrets.PROFILE_TOKEN || secrets.GITHUB_TOKEN }}
+
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"

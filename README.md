@@ -16,5 +16,5 @@
 
 ![Languages](./output/langs.svg)
 
-![Snake](./output/snake.svg)
+![Snake](./output/snake.gif)
 

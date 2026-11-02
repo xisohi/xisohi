@@ -457,7 +457,6 @@ def main():
     }
     if cal:
         files["heatmap.svg"] = render_heatmap(cal)
-        files["snake.svg"] = render_snake(cal)
     else:
         src = ("PROFILE_TOKEN" if os.environ.get("PROFILE_TOKEN")
                else ("GITHUB_TOKEN" if os.environ.get("GITHUB_TOKEN") else "无TOKEN"))
@@ -473,7 +472,7 @@ def main():
         hint = "配置PROFILE_TOKEN后由Actions自动生成"
         if CONTRIB_ERR:
             hint = hint + "（错误: " + CONTRIB_ERR[:60] + "）"
-        for name in ("heatmap.svg", "snake.svg"):
+        for name in ("heatmap.svg",):
             files[name] = ('<svg xmlns="http://www.w3.org/2000/svg" width="520" '
                            'height="86"><rect width="520" height="86" fill="%s"/>'
                            '<text x="20" y="30" fill="%s" font-size="14">%s</text>'
